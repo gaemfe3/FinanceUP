@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <form action="/history" method="post">
+        <label>Since:</label>
+        <input type="date" id="since" name="since">
+        <label>To:</label>
+        <input type="date" id="to" name="to">
+        <input value="Search" type="submit">
+    </form>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Transaction</th>
+                <th>Symbol</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>Days ago</th>
+                <th>Price change (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in ehist_tb %}
+            <tr>
+                <td>{{ row.month }}-{{ row.day }}-{{ row.year }}</td>
+
+                {% if row.minute < 10  %}
+                    <td>{{ row.hour }}:0{{ row.minute }}</td>
+                {% else %}
+                    <td>{{ row.hour }}:{{ row.minute }}</td>
+                {% endif %}
+
+                <td>{{ row.type }}</td>
+                <td>{{ row.symbol }}</td>
+                <td>{{ row.shares|abs() }}</td>
+                <td>{{ row.price }}</td>
+                <td>{{ row.span }}</td>
+
+                {% if row.change|float < 3.5  %}
+                    <td>{{ row.change }}</td>
+                {% else %}
+                    <td style="background-color:yellow;">{{ row.change }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

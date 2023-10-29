@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>TOTAL</th>
+                <th>Buy/Sell</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if shsy_els|length > 0  %}
+            {% for d in shsy_els %}
+            <tr>
+                <td class="symbol">{{ d.symbol }}</td>
+                <td>{{ d.sum_shr }}</td>
+                <td>{{ d.cprice }}</td>
+                <td>{{ d.total }}</td>
+                <td>
+                    <form action="/buy" method="post">
+                        <input autocomplete="off" name="shares" placeholder="number of shares" type="text">
+                        <button class="bb" name="symbol" type="submit" value="x">Buy</button>
+                        <button formaction="/sell" class="sb" name="symbol" type="submit" value="x">Sell</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+        {% endif %}
+            <tr>
+                <th colspan="3">Cash</th>
+                <td>{{ cash }}</td>
+            </tr>
+            <tr>
+                <th colspan="3">TOTAL</th>
+                <td>{{ total2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const buy_button = document.getElementsByClassName("bb");
+        const sell_button = document.getElementsByClassName("sb");
+        const tds_symbol = document.getElementsByClassName("symbol")
+
+        for (let i = 0; i < tds_symbol.length ;i++) {
+            buy_button[i].value = tds_symbol[i].innerHTML;
+            sell_button[i].value = tds_symbol[i].innerHTML
+        }
+    </script>
+
+{% endblock %}

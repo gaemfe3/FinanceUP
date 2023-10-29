@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Analysis
+{% endblock %}
+
+{% block main %}
+    <form action="/analysis" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="symbol" name="symbol" placeholder="Symbol" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Analize</button>
+    </form>
+    <br>
+    <table>
+        <caption>Return and Waiting time's quartiles to obtain a return greater than 3.50%</caption>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Q1-days</th>
+                <th>Q3-days</th>
+                <th>Q1-return</th>
+                <th>Q3-return</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dic in analized_ls %}
+            <tr>
+                <td class="symbol">{{ dic.symbol }}</td>
+                <td>{{ dic.Q1_dt }}</td>
+                <td>{{ dic.Q3_dt }}</td>
+                <td>{{ dic.Q1_rt }}</td>
+                <td>{{ dic.Q3_rt }}</td>
+                <td>
+                    <form action="/analysis" method="post">
+                        <button class="bb" name="symbol" type="submit" value="x">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        const remove_button = document.getElementsByClassName("bb");
+        const tds_symbol = document.getElementsByClassName("symbol")
+
+        for (let i = 0; i < tds_symbol.length ;i++) {
+            remove_button[i].value = "remove" + tds_symbol[i].innerHTML;
+        }
+    </script>
+{% endblock %}

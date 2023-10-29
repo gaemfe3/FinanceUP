@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block main %}
+    <div>
+        <span class="quote" id="symbol">{{ symbol }}</span>
+        <span class="quote">{{ price }}</span>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <div id="myPlot" style="width:100%;max-width:900px;margin:auto"></div>
+
+    <script>
+        var symbol = document.getElementById("symbol").innerHTML;
+        filename = symbol + '.csv'
+        const url = '/get_file/' + filename
+
+        fetch(url)
+        .then(response => {
+        // Check for request success
+            if (response.ok) {
+            // Extract CSV data from the response
+                return response.text();
+            } else {
+            // Handle non-successful response
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+        })
+        .then(csvData => {
+        // Parse CSV data using JavaScript's built-in methods
+            const quotes = parseCsvData(csvData);
+
+        // 'quotes' now contains an array of objects representing the CSV data
+        // Access quotes and do something with it
+            handleQuotes(quotes);
+        })
+        .catch(error => {
+            // Handle errors during the request
+            console.error('Error during request:', error.message);
+        });
+
+        function parseCsvData(csvData) {
+            // Implement your own CSV parsing logic here
+            // For simplicity, split lines and assume the first line is the header
+            const lines = csvData.split('\n');
+            const header = lines[0].split(',');
+            const quotes = lines.slice(1).map(line => {
+                const values = line.split(',');
+                const entry = {};
+                header.forEach((key, index) => {
+                    entry[key] = values[index];
+                });
+                return entry;
+            });
+        return quotes;
+        }
+        //
+        function handleQuotes(quotes) {
+            // Access quotes here and do something with it
+            const yValues = new Array();
+            const xValues = new Array();
+            var max_y = 0;
+
+            for (const quote of quotes) {
+                var prc = parseFloat(quote["Close"]);
+                yValues.push(prc);
+                xValues.push(quote["Date"]);
+
+                if (max_y < prc) {
+                    max_y = prc;
+                }
+            }
+            const max_yg = Math.ceil(1.2*max_y)
+            console.log(max_yg);
+
+            var data = [{
+                x: xValues,
+                y: yValues,
+                type: 'scatter'
+            }];
+            Plotly.newPlot('myPlot', data);
+        }
+    </script>
+{% endblock %}
